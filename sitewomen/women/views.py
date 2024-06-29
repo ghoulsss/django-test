@@ -18,7 +18,7 @@ def categories_by_slug(request, cat_slug):
 
 
 def archive(request, year):
-    if year > 2024
+    if year > 2024:
         uri = reverse('cats', args=('music', ))
         return redirect(uri)
 
