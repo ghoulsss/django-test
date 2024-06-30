@@ -1,2 +1,17 @@
 djvenv/
 .idea/
+
+venv/
+
+*.log
+*.pot
+*.pyc
+**/__pycache__
+__pycache__
+
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history
