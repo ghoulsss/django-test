@@ -1,10 +1,10 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Women, Category, TagPost, UploadFiles
@@ -27,13 +27,6 @@ class WomenHome(ListView):
 
     def get_queryset(self):
         return Women.published.all().select_related('cat')
-
-    # def context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['title'] = 'Главная страница'
-    #     context['menu'] = menu
-    #     context['posts'] = Women.published.all().select_related('cat')
-    #     context['cat_selected'] = int(self.request.GET.get('cat_id', 0))
 
 
 def about(request):
@@ -64,27 +57,24 @@ class ShowPost(DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        data = {
-            'menu': menu,
-            'title': 'Добавление статьи',
-            'form': form
-        }
-        return render(request, 'women/addpage.html', data)
+class AddPage(CreateView):
+    form_class = AddPostForm
+    template_name = 'women/addpage.html'
+    extra_context = {
+        'menu': menu,
+        'title': 'Добавление статьи',
+    }
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        data = {
-            'menu': menu,
-            'title': 'Добавление статьи',
-            'form': form
-        }
-        return render(request, 'women/addpage.html', data)
+
+class UpdatePage(UpdateView):
+    model = Women
+    fields = ['title', 'content', 'photo', 'is_published', 'cat']
+    template_name = 'women/addpage.html'
+    success_url = reverse_lazy('home')
+    extra_context = {
+        'menu': menu,
+        'title': 'Редактирование статьи',
+    }
 
 
 def contact(request):
@@ -93,18 +83,6 @@ def contact(request):
 
 def login(request):
     return HttpResponse("Авторизация")
-
-
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
-    data = {
-        'title': f'Рубрика: {category.name}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': category,
-    }
-    return render(request, 'women/index.html', context=data)
 
 
 class WomenCategory(ListView):
