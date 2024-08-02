@@ -10,3 +10,9 @@ div.breadcrumbs {
     background: #6A6E5D;
 }
 
+li.last form {
+    display: inline-block;
+    button {
+        all: unset;
+    };
+}
