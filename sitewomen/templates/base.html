@@ -22,11 +22,9 @@
 {% endfor %}
 {% if user.is_authenticated %}
     
-    <form style="display:inline-block" method="post" action="{% url 'users:logout' %}">
-    {% csrf_token %}
-    <button type="submit">Выйти</button>
-    </form>
-
+<form id="logoutForm" method="post" action="{% url 'users:logout' %}">
+	{% csrf_token %}
+	<li class="last">{{ user.username }} | <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Выйти</a></li>
 {% else %}
     <li class="last"><a href="{% url 'users:login' %}">Войти</a> | <a href="#">Регистрация</a></li>
 {% endif %}
