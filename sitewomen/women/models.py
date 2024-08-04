@@ -28,7 +28,7 @@ class Women(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Slug',validators=[
         MinLengthValidator(5, message='Минимум 5 символов'),
-        MaxLengthValidator(100, message='Минимум 5 символов')
+        MaxLengthValidator(100, message='Максимум 100 символов')
     ])
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', default=None, blank=True, null=True, verbose_name='Фото')
     content = models.TextField(blank=True, verbose_name='Текст статьи')
@@ -59,10 +59,6 @@ class Women(models.Model):
 
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_slug': self.slug})
-
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(translit_to_eng(self.title))
-    #     super().save(*args, **kwargs)
 
 
 class Category(models.Model):

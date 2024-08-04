@@ -31,12 +31,12 @@ def about(request):
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'women/about.html',
                   {'title': 'О сайте', 'page_obj': page_obj})
 
 
 class ShowPost(DataMixin, DetailView):
-    model = Women
     template_name = 'women/post.html'
     slug_url_kwarg = 'post_slug'
     context_object_name = 'post'
@@ -55,7 +55,8 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     title_page = 'Добавление статьи'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        w = form.save(commit=False)
+        w.author = self.request.user
         return super().form_valid(form)
 
 
@@ -81,7 +82,7 @@ class WomenCategory(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Women.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+        return Women.published.filter(cat__slug=self.kwargs['cat_slug']).select_related("cat")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,7 +94,7 @@ class WomenCategory(DataMixin, ListView):
 
 
 def page_not_found(request, exception):
-    return HttpResponseNotFound("Страница не найдена")
+    return HttpResponseNotFound("<h1>Страница не найдена</h1>")
 
 
 class TagPostList(DataMixin, ListView):
@@ -108,3 +109,6 @@ class TagPostList(DataMixin, ListView):
 
     def get_queryset(self):
         return Women.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
+
+
+
